@@ -1,6 +1,7 @@
 package de.poeschl.bukkit.magratheaStuff;
 
 import de.poeschl.bukkit.magratheaStuff.helper.LogHelper;
+import de.poeschl.bukkit.magratheaStuff.helper.SystemHelper;
 import de.poeschl.bukkit.magratheaStuff.managers.SettingManager;
 import de.poeschl.bukkit.magratheaStuff.threads.PreventRestartTask;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -13,6 +14,7 @@ public class MagratheaStuffPlugin extends JavaPlugin {
     private SettingManager settingManager;
     private LogHelper logHelper;
     private PreventRestartTask preventRestartTask;
+    private SystemHelper systemHelper;
 
     @Override
     public void onEnable() {
@@ -25,8 +27,11 @@ public class MagratheaStuffPlugin extends JavaPlugin {
         }
         settingManager = new SettingManager(getConfig(), getLogger());
         logHelper = new LogHelper(this);
+        systemHelper = new SystemHelper(this);
 
         getLogger().info(pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!");
+
+        systemHelper.startCpuLoadTask();
 
         init();
     }
@@ -55,8 +60,8 @@ public class MagratheaStuffPlugin extends JavaPlugin {
     }
 
     private void activateRestartPrevention() {
-        preventRestartTask = new PreventRestartTask(this.getLogger(), logHelper);
-        new Timer().scheduleAtFixedRate(preventRestartTask, 1000, 1000);
+        preventRestartTask = new PreventRestartTask(this.getLogger(), logHelper, systemHelper);
+        new Timer().scheduleAtFixedRate(preventRestartTask, 0, 10000);
 
     }
 
