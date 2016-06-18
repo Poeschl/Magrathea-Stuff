@@ -12,6 +12,9 @@ import java.util.logging.Logger;
 
 public class PreventRestartTask extends TimerTask {
 
+    private static final int MIN_CPU_TO_PREVENT = 80;
+    private static final int MAX_CPU_TO_PREVENT = 150;
+
     private LogHelper logHelper;
     private SystemHelper systemHelper;
     private Logger logger;
@@ -28,7 +31,7 @@ public class PreventRestartTask extends TimerTask {
         try {
             long timeDiff = differenceBetween(new Date(), logHelper.getTimeOfLastServerLogEntry());
             double cpuLoad = systemHelper.checkCpuLoad();
-            if (timeDiff >= 1 && cpuLoad > 80) {
+            if (timeDiff >= 1 && cpuLoad > MIN_CPU_TO_PREVENT && cpuLoad < MAX_CPU_TO_PREVENT) {
                 logHelper.printCPULoad(cpuLoad);
             }
         } catch (ParseException e) {
