@@ -4,6 +4,7 @@ import de.poeschl.bukkit.magratheaStuff.helper.LogHelper;
 import de.poeschl.bukkit.magratheaStuff.helper.SystemHelper;
 import de.poeschl.bukkit.magratheaStuff.managers.SettingManager;
 import de.poeschl.bukkit.magratheaStuff.threads.PreventRestartTask;
+import de.poeschl.bukkit.magratheaStuff.threads.UpdateCpuLoadTask;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -26,8 +27,8 @@ public class MagratheaStuffPlugin extends JavaPlugin {
             saveDefaultConfig();
         }
         settingManager = new SettingManager(getConfig(), getLogger());
-        logHelper = new LogHelper(this);
-        systemHelper = new SystemHelper(this);
+        logHelper = new LogHelper(getLogger());
+        systemHelper = new SystemHelper(new UpdateCpuLoadTask());
 
         getLogger().info(pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!");
 

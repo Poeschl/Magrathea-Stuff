@@ -82,9 +82,6 @@ configurations {
     pojobuilderCompile.extendsFrom runtime
     testCompile.extendsFrom pojobuilderRuntime
 }
-compileJava.classpath += configurations.codeGeneration
-compileTestJava.classpath += configurations.codeGeneration
-compileJava.options.compilerArgs += ['-s', 'src/generated/java']
 
 dependencies {
     codeGeneration 'net.karneim:pojobuilder:3.+'

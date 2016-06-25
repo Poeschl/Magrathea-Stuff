@@ -1,7 +1,7 @@
 package de.poeschl.bukkit.magratheaStuff.helper;
 
 import de.poeschl.bukkit.magratheaStuff.threads.UpdateCpuLoadTask;
-import org.bukkit.plugin.Plugin;
+import net.karneim.pojobuilder.GeneratePojoBuilder;
 
 import java.util.Timer;
 
@@ -9,12 +9,11 @@ public class SystemHelper {
 
     private static final int CPU_CHECK_PERIOD = 10000;
 
-    private Plugin plugin;
     private UpdateCpuLoadTask loadTask;
 
-    public SystemHelper(Plugin plugin) {
-        this.plugin = plugin;
-        this.loadTask = new UpdateCpuLoadTask();
+    @GeneratePojoBuilder
+    public SystemHelper(UpdateCpuLoadTask cpuLoadTask) {
+        this.loadTask = cpuLoadTask;
     }
 
     public double checkCpuLoad() {
