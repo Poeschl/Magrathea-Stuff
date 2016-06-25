@@ -10,6 +10,7 @@ import de.poeschl.bukkit.magratheaStuff.threads.UpdateCpuLoadTaskBuilder;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.mockito.Mockito;
 
+import javax.management.MBeanServer;
 import java.util.logging.Logger;
 
 /**
@@ -42,7 +43,9 @@ public class PojoUtilities {
                 .withDateTime(Mockito.mock(DateTime.class));
     }
 
-    public static UpdateCpuLoadTaskBuilder $UpdateSpcLoadTask() {
-        return new UpdateCpuLoadTaskBuilder();
+    public static UpdateCpuLoadTaskBuilder $UpdateCpuLoadTask() {
+        return new UpdateCpuLoadTaskBuilder()
+                .withMBeanServer(Mockito.mock(MBeanServer.class))
+                .withRuntime(Mockito.mock(Runtime.class));
     }
 }

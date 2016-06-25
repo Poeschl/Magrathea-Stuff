@@ -9,6 +9,7 @@ import de.poeschl.bukkit.magratheaStuff.threads.UpdateCpuLoadTask;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.management.ManagementFactory;
 import java.util.Timer;
 
 public class MagratheaStuffPlugin extends JavaPlugin {
@@ -30,7 +31,7 @@ public class MagratheaStuffPlugin extends JavaPlugin {
         }
         settingManager = new SettingManager(getConfig(), getLogger());
         logHelper = new LogHelper(getLogger());
-        systemHelper = new SystemHelper(new UpdateCpuLoadTask());
+        systemHelper = new SystemHelper(new UpdateCpuLoadTask(ManagementFactory.getPlatformMBeanServer(), Runtime.getRuntime()));
         dateTime = new DateTime();
 
         getLogger().info(pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!");
