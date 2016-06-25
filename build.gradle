@@ -28,6 +28,24 @@ apply plugin: 'com.github.kt3k.coveralls'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
+ext.srcGenDir = file("${buildDir}/generated")
+
+sourceSets {
+    pojobuilder {
+        java {
+            srcDirs = ["${srcGenDir}/${owner.name}/java"]
+        }
+        resources {
+            srcDirs = ["${srcGenDir}/${owner.name}/resources"]
+        }
+        compileClasspath += main.output
+    }
+    test {
+        compileClasspath += pojobuilder.output
+        runtimeClasspath += pojobuilder.output
+    }
+}
+
 processResources {
     filter ReplaceTokens, tokens: [
             "name"   : project.name,
@@ -59,12 +77,42 @@ jacocoTestReport {
 //    }
 }
 
+configurations {
+    codeGeneration
+    pojobuilderCompile.extendsFrom runtime
+    testCompile.extendsFrom pojobuilderRuntime
+}
+compileJava.classpath += configurations.codeGeneration
+compileTestJava.classpath += configurations.codeGeneration
+compileJava.options.compilerArgs += ['-s', 'src/generated/java']
+
 dependencies {
+    codeGeneration 'net.karneim:pojobuilder:3.+'
+
+    compile 'net.karneim:pojobuilder:3.+:annotations'
     compile 'org.bukkit:bukkit:1.7.9-R0.2'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-all:1.8.4'
-    testCompile 'org.hamcrest:hamcrest-all:1.3'
-
-
+    testCompile 'org.assertj:assertj-core:3.4.1'
 }
+
+clean << {
+    srcGenDir.deleteDir()
+}
+
+task generatePojobuilder(type: JavaCompile, group: 'build', description: 'Generates all pojobuilder types') {
+    ext.srcDestinationDir = sourceSets.pojobuilder.java.srcDirs.iterator()[0]
+    source = sourceSets.main.java
+    destinationDir = temporaryDir
+    classpath = configurations.compile + configurations.codeGeneration
+    options.compilerArgs = [
+            '-proc:only',
+            '-Xmaxerrs', '0',
+            '-s', srcDestinationDir
+    ]
+    doFirst {
+        srcDestinationDir.exists() || srcDestinationDir.mkdirs()
+    }
+}
+compilePojobuilderJava.dependsOn generatePojobuilder
