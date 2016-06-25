@@ -70,11 +70,11 @@ jacocoTestReport {
         html.enabled true
     }
 
-//    afterEvaluate {
-//        classDirectories = files(classDirectories.files.collect {
-//            fileTree(dir: it, exclude: [])
-//        })
-//    }
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: ["**/DateTime.*"])
+        })
+    }
 }
 
 configurations {
