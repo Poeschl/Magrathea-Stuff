@@ -3,6 +3,8 @@ package de.poeschl.bukkit.magratheaStuff.threads;
 
 import de.poeschl.bukkit.magratheaStuff.helper.LogHelper;
 import de.poeschl.bukkit.magratheaStuff.helper.SystemHelper;
+import de.poeschl.bukkit.magratheaStuff.models.DateTime;
+import net.karneim.pojobuilder.GeneratePojoBuilder;
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -12,21 +14,25 @@ import java.util.logging.Logger;
 
 public class PreventRestartTask extends TimerTask {
 
+    private final DateTime dateTime;
+
     private LogHelper logHelper;
     private SystemHelper systemHelper;
     private Logger logger;
 
-    public PreventRestartTask(Logger logger, LogHelper logHelper, SystemHelper systemHelper) {
+    @GeneratePojoBuilder
+    public PreventRestartTask(Logger logger, LogHelper logHelper, SystemHelper systemHelper, DateTime dateTime) {
         this.logger = logger;
         this.logHelper = logHelper;
         this.systemHelper = systemHelper;
+        this.dateTime = dateTime;
         logger.info("PreventRestartThread started");
     }
 
     @Override
     public void run() {
         try {
-            long timeDiff = differenceBetween(new Date(), logHelper.getTimeOfLastServerLogEntry());
+            long timeDiff = differenceBetween(dateTime.getTime(), logHelper.getTimeOfLastServerLogEntry());
             double cpuLoad = systemHelper.checkCpuLoad();
             if (timeDiff >= 1 && cpuLoad > 80) {
                 logHelper.printCPULoad(cpuLoad);
@@ -43,7 +49,7 @@ public class PreventRestartTask extends TimerTask {
      * @param timeToRun
      * @return difference in minutes
      */
-    private long differenceBetween(Date currentTime, Date timeToRun) {
+    protected long differenceBetween(Date currentTime, Date timeToRun) {
         Calendar currentCal = Calendar.getInstance();
         currentCal.setTime(currentTime);
 

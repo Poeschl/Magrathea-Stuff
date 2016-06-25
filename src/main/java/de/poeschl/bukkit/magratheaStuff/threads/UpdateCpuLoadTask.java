@@ -1,5 +1,7 @@
 package de.poeschl.bukkit.magratheaStuff.threads;
 
+import net.karneim.pojobuilder.GeneratePojoBuilder;
+
 import javax.management.*;
 import java.lang.management.ManagementFactory;
 import java.util.TimerTask;
@@ -8,6 +10,7 @@ public class UpdateCpuLoadTask extends TimerTask {
 
     private double lastLoad;
 
+    @GeneratePojoBuilder
     public UpdateCpuLoadTask() {
     }
 
