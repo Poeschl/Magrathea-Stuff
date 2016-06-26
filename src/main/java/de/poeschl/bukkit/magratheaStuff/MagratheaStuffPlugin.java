@@ -26,24 +26,27 @@ public class MagratheaStuffPlugin extends JavaPlugin {
     SystemHelper systemHelper;
     DateTime dateTime;
     Logger logger;
+    Timer preventTaskTimer;
 
     @Override
     public void onEnable() {
         super.onEnable();
-        PluginDescriptionFile pdfFile = this.getDescription();
+        PluginDescriptionFile pdfFile = getInfo();
 
         if (getConfig().getKeys(false).size() == 0) {
             getConfig();
             saveDefaultConfig();
         }
 
-        instanceFactory = new InstanceFactory();
+        instanceFactory = getInstanceFactory();
         logger = instanceFactory.getLogger(this);
         settingManager = instanceFactory.createSettingsManager(getConfig(), logger);
         logHelper = instanceFactory.createLogHelper(logger);
         logHelper.setLogFile(new File("./" + LOGS_FOLDER_NAME + "/" + LOG_FILE_NAME));
         systemHelper = instanceFactory.createSystemHelper(new UpdateCpuLoadTask(instanceFactory.getMBeanServer(), instanceFactory.getRuntime()));
         dateTime = instanceFactory.createDateTime();
+        preventRestartTask = instanceFactory.createPreventRestartTask(logger, logHelper, systemHelper, dateTime);
+        preventTaskTimer = instanceFactory.createTimer();
 
         logger.info(pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!");
 
@@ -58,10 +61,17 @@ public class MagratheaStuffPlugin extends JavaPlugin {
         stopRestartPrevention();
     }
 
+    protected PluginDescriptionFile getInfo() {
+        return getDescription();
+    }
+
+    protected InstanceFactory getInstanceFactory() {
+        return new InstanceFactory();
+    }
+
     protected void initRestartPrevention() {
         if (settingManager.getHighLoadRestartPreventionEnabled()) {
-            preventRestartTask = new PreventRestartTask(this.logger, logHelper, systemHelper, dateTime);
-            new Timer().scheduleAtFixedRate(preventRestartTask, 0, 10000);
+            preventTaskTimer.scheduleAtFixedRate(preventRestartTask, 0, 10000);
         }
     }
 

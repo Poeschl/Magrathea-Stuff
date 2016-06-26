@@ -4,12 +4,14 @@ import de.poeschl.bukkit.magratheaStuff.helper.LogHelper;
 import de.poeschl.bukkit.magratheaStuff.helper.SystemHelper;
 import de.poeschl.bukkit.magratheaStuff.managers.SettingManager;
 import de.poeschl.bukkit.magratheaStuff.models.DateTime;
+import de.poeschl.bukkit.magratheaStuff.threads.PreventRestartTask;
 import de.poeschl.bukkit.magratheaStuff.threads.UpdateCpuLoadTask;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.management.MBeanServer;
 import java.lang.management.ManagementFactory;
+import java.util.Timer;
 import java.util.logging.Logger;
 
 /**
@@ -44,5 +46,13 @@ public class InstanceFactory {
 
     public Logger getLogger(JavaPlugin javaPlugin) {
         return javaPlugin.getLogger();
+    }
+
+    public Timer createTimer() {
+        return new Timer();
+    }
+
+    public PreventRestartTask createPreventRestartTask(Logger logger, LogHelper logHelper, SystemHelper systemHelper, DateTime dateTime) {
+        return new PreventRestartTask(logger, logHelper, systemHelper, dateTime);
     }
 }

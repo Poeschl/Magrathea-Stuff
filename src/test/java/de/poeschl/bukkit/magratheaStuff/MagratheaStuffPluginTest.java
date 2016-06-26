@@ -9,51 +9,41 @@ import de.poeschl.bukkit.magratheaStuff.utils.InstanceFactory;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Timer;
 import java.util.logging.Logger;
 
-import static junit.framework.TestCase.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 /**
  * Project: Magrathea-Stuff
  * Created by Markus on 26.06.2016.
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({MagratheaStuffPlugin.class, JavaPlugin.class})
 public class MagratheaStuffPluginTest {
 
-
-    //TODO: somehow mock the description and then test also the first start!
-    @Ignore
     @Test
     public void onEnable() throws Exception {
         //WHEN
-        SettingManager mockSettings = Mockito.mock(SettingManager.class);
-        LogHelper mockLogHelper = Mockito.mock(LogHelper.class);
         SystemHelper mockSystemHelper = Mockito.mock(SystemHelper.class);
         InstanceFactory mockedInstanceFactory = Mockito.mock(InstanceFactory.class);
         MagratheaStuffPlugin pluginToTest = Mockito.mock(MagratheaStuffPlugin.class);
+        FileConfiguration mockedConfig = Mockito.mock(FileConfiguration.class);
+        Set<String> dummyKeys = new HashSet<>();
+        dummyKeys.add("dummy");
 
-        when(mockedInstanceFactory.createSettingsManager(any(FileConfiguration.class), any(Logger.class))).thenReturn(mockSettings);
-        when(mockedInstanceFactory.createLogHelper(any(Logger.class))).thenReturn(mockLogHelper);
+        when(mockedInstanceFactory.createSettingsManager(any(FileConfiguration.class), any(Logger.class))).thenReturn(Mockito.mock(SettingManager.class));
+        when(mockedInstanceFactory.createLogHelper(any(Logger.class))).thenReturn(Mockito.mock(LogHelper.class));
         when(mockedInstanceFactory.createSystemHelper(any(UpdateCpuLoadTask.class))).thenReturn(mockSystemHelper);
         when(mockedInstanceFactory.getLogger(any(JavaPlugin.class))).thenReturn(Mockito.mock(Logger.class));
-        whenNew(InstanceFactory.class).withAnyArguments().thenReturn(mockedInstanceFactory);
-        when(pluginToTest.getConfig()).thenReturn(Mockito.mock(FileConfiguration.class));
-//        when(pluginToTest.getDescription()).thenReturn(Mockito.mock(PluginDescriptionFile.class));
-        Method descGetter = PowerMockito.method(JavaPlugin.class, "getDescription");
-        PowerMockito.when(JavaPlugin.class, descGetter).withNoArguments().thenReturn(Mockito.mock(PluginDescriptionFile.class));
+        when(pluginToTest.getConfig()).thenReturn(mockedConfig);
+        when(mockedConfig.getKeys(anyBoolean())).thenReturn(dummyKeys);
+        when(pluginToTest.getInstanceFactory()).thenReturn(mockedInstanceFactory);
+        when(pluginToTest.getInfo()).thenReturn(new PluginDescriptionFile("", "", ""));
 
         doCallRealMethod().when(pluginToTest).onEnable();
 
@@ -63,6 +53,33 @@ public class MagratheaStuffPluginTest {
         //VERIFY
         verify(mockSystemHelper).startCpuLoadTask();
         verify(pluginToTest).initRestartPrevention();
+        verify(pluginToTest, never()).saveDefaultConfig();
+    }
+
+    @Test
+    public void onEnableFirstTime() throws Exception {
+        //WHEN
+        SystemHelper mockSystemHelper = Mockito.mock(SystemHelper.class);
+        InstanceFactory mockedInstanceFactory = Mockito.mock(InstanceFactory.class);
+        MagratheaStuffPlugin pluginToTest = Mockito.mock(MagratheaStuffPlugin.class);
+
+        when(mockedInstanceFactory.createSettingsManager(any(FileConfiguration.class), any(Logger.class))).thenReturn(Mockito.mock(SettingManager.class));
+        when(mockedInstanceFactory.createLogHelper(any(Logger.class))).thenReturn(Mockito.mock(LogHelper.class));
+        when(mockedInstanceFactory.createSystemHelper(any(UpdateCpuLoadTask.class))).thenReturn(mockSystemHelper);
+        when(mockedInstanceFactory.getLogger(any(JavaPlugin.class))).thenReturn(Mockito.mock(Logger.class));
+        when(pluginToTest.getConfig()).thenReturn(Mockito.mock(FileConfiguration.class));
+        when(pluginToTest.getInstanceFactory()).thenReturn(mockedInstanceFactory);
+        when(pluginToTest.getInfo()).thenReturn(new PluginDescriptionFile("", "", ""));
+
+        doCallRealMethod().when(pluginToTest).onEnable();
+
+        //THEN
+        pluginToTest.onEnable();
+
+        //VERIFY
+        verify(mockSystemHelper).startCpuLoadTask();
+        verify(pluginToTest).initRestartPrevention();
+        verify(pluginToTest).saveDefaultConfig();
     }
 
     @Test
@@ -77,12 +94,46 @@ public class MagratheaStuffPluginTest {
 
     @Test
     public void initRestartPreventionPositive() {
-        fail();
+        //WHEN
+        SettingManager mockSettings = Mockito.mock(SettingManager.class);
+        Timer preventMockTimer = Mockito.mock(Timer.class);
+        PreventRestartTask mockTask = Mockito.mock(PreventRestartTask.class);
+        MagratheaStuffPlugin pluginToTest = Mockito.mock(MagratheaStuffPlugin.class);
+        pluginToTest.settingManager = mockSettings;
+        pluginToTest.preventRestartTask = mockTask;
+        pluginToTest.preventTaskTimer = preventMockTimer;
+
+        when(mockSettings.getHighLoadRestartPreventionEnabled()).thenReturn(true);
+
+        doCallRealMethod().when(pluginToTest).initRestartPrevention();
+
+        //THEN
+        pluginToTest.initRestartPrevention();
+
+        //VERIFY
+        verify(preventMockTimer).scheduleAtFixedRate(eq(mockTask), eq(0L), anyLong());
     }
 
     @Test
     public void initRestartPreventionNegative() {
-        fail();
+        //WHEN
+        SettingManager mockSettings = Mockito.mock(SettingManager.class);
+        Timer preventMockTimer = Mockito.mock(Timer.class);
+        PreventRestartTask mockTask = Mockito.mock(PreventRestartTask.class);
+        MagratheaStuffPlugin pluginToTest = Mockito.mock(MagratheaStuffPlugin.class);
+        pluginToTest.settingManager = mockSettings;
+        pluginToTest.preventRestartTask = mockTask;
+        pluginToTest.preventTaskTimer = preventMockTimer;
+
+        when(mockSettings.getHighLoadRestartPreventionEnabled()).thenReturn(false);
+
+        doCallRealMethod().when(pluginToTest).initRestartPrevention();
+
+        //THEN
+        pluginToTest.initRestartPrevention();
+
+        //VERIFY
+        verify(preventMockTimer, never()).scheduleAtFixedRate(eq(mockTask), anyLong(), anyLong());
     }
 
     @Test
