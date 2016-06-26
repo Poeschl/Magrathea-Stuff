@@ -29,7 +29,7 @@ public class InstanceFactory {
     }
 
     public SystemHelper createSystemHelper(UpdateCpuLoadTask updateCpuLoadTask) {
-        return new SystemHelper(updateCpuLoadTask);
+        return new SystemHelper(updateCpuLoadTask, this);
     }
 
     public DateTime createDateTime() {

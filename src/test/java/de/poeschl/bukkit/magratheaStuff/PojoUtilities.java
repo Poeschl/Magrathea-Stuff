@@ -7,6 +7,7 @@ import de.poeschl.bukkit.magratheaStuff.models.DateTime;
 import de.poeschl.bukkit.magratheaStuff.threads.PreventRestartTaskBuilder;
 import de.poeschl.bukkit.magratheaStuff.threads.UpdateCpuLoadTask;
 import de.poeschl.bukkit.magratheaStuff.threads.UpdateCpuLoadTaskBuilder;
+import de.poeschl.bukkit.magratheaStuff.utils.InstanceFactory;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.mockito.Mockito;
 
@@ -26,7 +27,8 @@ public class PojoUtilities {
 
     public static SystemHelperBuilder $SystemHelper() {
         return new SystemHelperBuilder()
-                .withCpuLoadTask(Mockito.mock(UpdateCpuLoadTask.class));
+                .withCpuLoadTask(Mockito.mock(UpdateCpuLoadTask.class))
+                .withInstanceFactory(Mockito.mock(InstanceFactory.class));
     }
 
     public static SettingManagerBuilder $SettingsManager() {
