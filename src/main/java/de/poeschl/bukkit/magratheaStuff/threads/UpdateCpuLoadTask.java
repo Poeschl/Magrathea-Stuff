@@ -39,7 +39,7 @@ public class UpdateCpuLoadTask extends TimerTask {
             // returns a percentage value with 1 decimal point precision
             lastLoad = ((int) (value * 1000) / 10.0) * cores;
         } catch (MalformedObjectNameException | InstanceNotFoundException | ReflectionException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 
