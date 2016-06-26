@@ -53,7 +53,7 @@ public class LogHelper {
     }
 
     protected String tail(File file, int lines) {
-        java.io.RandomAccessFile fileHandler = null;
+        RandomAccessFile fileHandler = null;
         try {
             fileHandler =
                     new RandomAccessFile(file, "r");

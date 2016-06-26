@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import static de.poeschl.bukkit.magratheaStuff.PojoUtilities.$LogHelper;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 
 public class LogHelperTest {
@@ -53,7 +54,7 @@ public class LogHelperTest {
     }
 
     @Test
-    public void tail() {
+    public void tailCorrect() {
         File testLog = new File(TEST_LOG_URL.getPath());
         LogHelper logHelperToTest = $LogHelper().build();
 
@@ -62,4 +63,15 @@ public class LogHelperTest {
         assertThat(oneLine.trim()).isEqualTo("[20:28:29] [Server thread/INFO] [FML/]: Unloading dimension 11");
     }
 
+    @Test
+    public void tailNoLogFile() {
+        File testLog = new File("some/Crazy/Path");
+        Logger mockLogger = Mockito.mock(Logger.class);
+        LogHelper logHelperToTest = $LogHelper().withLogger(mockLogger).build();
+
+        String oneLine = logHelperToTest.tail(testLog, 1);
+
+        assertThat(oneLine).isNullOrEmpty();
+        verify(mockLogger).warning(anyString());
+    }
 }
