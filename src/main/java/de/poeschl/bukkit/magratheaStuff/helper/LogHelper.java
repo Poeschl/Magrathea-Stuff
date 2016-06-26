@@ -18,8 +18,8 @@ import java.util.logging.Logger;
  */
 public class LogHelper {
 
-    private static final String LOGS_FOLDER_NAME = "logs";
-    private static final String LOG_FILE_NAME = "latest.log";
+    public static final String LOGS_FOLDER_NAME = "logs";
+    public static final String LOG_FILE_NAME = "latest.log";
     private static final DateFormat LOG_DATEFORMAT = new SimpleDateFormat("HH:mm:ss");
 
     private Logger logger;
@@ -31,7 +31,7 @@ public class LogHelper {
     }
 
     public void setLogFile(File logFile) {
-        this.logFile = logFile;//new File("./" + LOGS_FOLDER_NAME + "/" + LOG_FILE_NAME);
+        this.logFile = logFile;
     }
 
     public Date getTimeOfLastServerLogEntry() throws ParseException {
