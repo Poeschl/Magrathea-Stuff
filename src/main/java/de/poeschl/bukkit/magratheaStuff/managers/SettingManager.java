@@ -1,5 +1,6 @@
 package de.poeschl.bukkit.magratheaStuff.managers;
 
+import net.karneim.pojobuilder.GeneratePojoBuilder;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.logging.Logger;
@@ -7,11 +8,12 @@ import java.util.logging.Logger;
 
 public class SettingManager {
 
-    private static final String HIGH_LOAD_RESTART_PREVENTION_ENABLED = "preventServerFromHighLoadRestart";
+    protected static final String HIGH_LOAD_RESTART_PREVENTION_ENABLED = "preventServerFromHighLoadRestart";
 
     private FileConfiguration config;
     private Logger logger;
 
+    @GeneratePojoBuilder
     public SettingManager(FileConfiguration config, Logger logger) {
         this.config = config;
         this.logger = logger;

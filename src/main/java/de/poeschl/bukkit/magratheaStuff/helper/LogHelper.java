@@ -1,6 +1,6 @@
 package de.poeschl.bukkit.magratheaStuff.helper;
 
-import org.bukkit.plugin.Plugin;
+import net.karneim.pojobuilder.GeneratePojoBuilder;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,6 +10,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Logger;
 
 /**
  * Project: Magrathea-Stuff
@@ -17,16 +18,20 @@ import java.util.Date;
  */
 public class LogHelper {
 
-    private static final String LOGS_FOLDER_NAME = "logs";
-    private static final String LOG_FILE_NAME = "latest.log";
+    public static final String LOGS_FOLDER_NAME = "logs";
+    public static final String LOG_FILE_NAME = "latest.log";
     private static final DateFormat LOG_DATEFORMAT = new SimpleDateFormat("HH:mm:ss");
 
-    private Plugin plugin;
+    private Logger logger;
     private File logFile;
 
-    public LogHelper(Plugin plugin) {
-        this.plugin = plugin;
-        logFile = new File("./" + LOGS_FOLDER_NAME + "/" + LOG_FILE_NAME);
+    @GeneratePojoBuilder
+    public LogHelper(Logger logger) {
+        this.logger = logger;
+    }
+
+    public void setLogFile(File logFile) {
+        this.logFile = logFile;
     }
 
     public Date getTimeOfLastServerLogEntry() throws ParseException {
@@ -40,15 +45,15 @@ public class LogHelper {
     }
 
     public void printCPULoad(double load) {
-        plugin.getLogger().info("CPU: " + load);
+        logger.info("CPU: " + load);
     }
 
     public void doFakeLogEntry() {
-        plugin.getLogger().info(".");
+        logger.info(".");
     }
 
-    private String tail(File file, int lines) {
-        java.io.RandomAccessFile fileHandler = null;
+    protected String tail(File file, int lines) {
+        RandomAccessFile fileHandler = null;
         try {
             fileHandler =
                     new RandomAccessFile(file, "r");
@@ -60,11 +65,11 @@ public class LogHelper {
                 fileHandler.seek(filePointer);
                 int readByte = fileHandler.readByte();
 
-                if (readByte == 0xA) {
+                if ((char) readByte == '\n') {
                     if (filePointer < fileLength) {
                         line = line + 1;
                     }
-                } else if (readByte == 0xD) {
+                } else if ((char) readByte == '\r') {
                     if (filePointer < fileLength - 1) {
                         line = line + 1;
                     }
@@ -78,10 +83,10 @@ public class LogHelper {
             String lastLine = sb.reverse().toString();
             return lastLine;
         } catch (FileNotFoundException e) {
-            plugin.getLogger().warning("Logging file not found!");
+            logger.warning("Logging file not found!");
             return null;
         } catch (IOException e) {
-            plugin.getLogger().warning("Error on read log file!");
+            logger.warning("Error on read log file!");
             return null;
         } finally {
             if (fileHandler != null)

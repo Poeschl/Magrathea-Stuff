@@ -1,4 +1,4 @@
-name: ${name}
+name: @name@
 main: de.poeschl.bukkit.magratheaStuff.MagratheaStuffPlugin
-version: ${version}
+version: @version@
 commands:

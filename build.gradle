@@ -1,0 +1,115 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3"
+    }
+}
+
+repositories {
+    maven { url "http://repo.bukkit.org/content/groups/public" }
+    jcenter()
+    mavenCentral()
+}
+
+group = 'de.poeschl.bukkit'
+version = '1.0-SNAPSHOT'
+
+description = """Magrathea-Stuff"""
+
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+ext.srcGenDir = file("${buildDir}/generated")
+
+sourceSets {
+    pojobuilder {
+        java {
+            srcDirs = ["${srcGenDir}/${owner.name}/java"]
+        }
+        resources {
+            srcDirs = ["${srcGenDir}/${owner.name}/resources"]
+        }
+        compileClasspath += main.output
+    }
+    test {
+        compileClasspath += pojobuilder.output
+        runtimeClasspath += pojobuilder.output
+    }
+}
+
+processResources {
+    filter ReplaceTokens, tokens: [
+            "name"   : project.name,
+            "version": project.version
+    ]
+}
+
+jar {
+    manifest {
+        attributes("Project": project.name,
+                "Version": project.version)
+    }
+}
+
+jacoco {
+    toolVersion = "0.7.6.201602180812"
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: ["**/DateTime.*", "**/InstanceFactory.*"])
+        })
+    }
+}
+
+configurations {
+    codeGeneration
+    pojobuilderCompile.extendsFrom runtime
+    testCompile.extendsFrom pojobuilderRuntime
+}
+
+dependencies {
+    codeGeneration 'net.karneim:pojobuilder:3.+'
+
+    compile 'net.karneim:pojobuilder:3.+:annotations'
+    compile 'org.bukkit:bukkit:1.7.9-R0.2'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-all:1.10.19'
+    testCompile 'org.assertj:assertj-core:3.4.1'
+}
+
+clean << {
+    srcGenDir.deleteDir()
+}
+
+task generatePojobuilder(type: JavaCompile, group: 'build', description: 'Generates all pojobuilder types') {
+    ext.srcDestinationDir = sourceSets.pojobuilder.java.srcDirs.iterator()[0]
+    source = sourceSets.main.java
+    destinationDir = temporaryDir
+    classpath = configurations.compile + configurations.codeGeneration
+    options.compilerArgs = [
+            '-proc:only',
+            '-Xmaxerrs', '0',
+            '-s', srcDestinationDir
+    ]
+    doFirst {
+        srcDestinationDir.exists() || srcDestinationDir.mkdirs()
+    }
+}
+compilePojobuilderJava.dependsOn generatePojobuilder

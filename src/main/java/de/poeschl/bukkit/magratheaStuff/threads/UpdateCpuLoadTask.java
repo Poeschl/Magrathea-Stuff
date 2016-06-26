@@ -1,22 +1,28 @@
 package de.poeschl.bukkit.magratheaStuff.threads;
 
+import net.karneim.pojobuilder.GeneratePojoBuilder;
+
 import javax.management.*;
-import java.lang.management.ManagementFactory;
 import java.util.TimerTask;
 
 public class UpdateCpuLoadTask extends TimerTask {
 
-    private double lastLoad;
+    protected double lastLoad;
 
-    public UpdateCpuLoadTask() {
+    private MBeanServer mBeanServer;
+    private Runtime runtime;
+
+    @GeneratePojoBuilder
+    public UpdateCpuLoadTask(MBeanServer mBeanServer, Runtime runtime) {
+        this.mBeanServer = mBeanServer;
+        this.runtime = runtime;
     }
 
     @Override
     public void run() {
         try {
-            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             ObjectName name = ObjectName.getInstance("java.lang:type=OperatingSystem");
-            AttributeList list = mbs.getAttributes(name, new String[]{"ProcessCpuLoad"});
+            AttributeList list = mBeanServer.getAttributes(name, new String[]{"ProcessCpuLoad"});
 
             if (list.isEmpty()) {
                 return;
@@ -29,11 +35,11 @@ public class UpdateCpuLoadTask extends TimerTask {
             if (value == -1.0) {
                 return;
             }
-            int cores = Runtime.getRuntime().availableProcessors();
+            int cores = runtime.availableProcessors();
             // returns a percentage value with 1 decimal point precision
             lastLoad = ((int) (value * 1000) / 10.0) * cores;
         } catch (MalformedObjectNameException | InstanceNotFoundException | ReflectionException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 
