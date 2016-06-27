@@ -2,11 +2,13 @@ package de.poeschl.bukkit.magratheaStuff;
 
 import de.poeschl.bukkit.magratheaStuff.helper.LogHelper;
 import de.poeschl.bukkit.magratheaStuff.helper.SystemHelper;
+import de.poeschl.bukkit.magratheaStuff.listener.PreventDispenseListener;
 import de.poeschl.bukkit.magratheaStuff.managers.SettingManager;
 import de.poeschl.bukkit.magratheaStuff.models.DateTime;
 import de.poeschl.bukkit.magratheaStuff.threads.PreventRestartTask;
 import de.poeschl.bukkit.magratheaStuff.threads.UpdateCpuLoadTask;
 import de.poeschl.bukkit.magratheaStuff.utils.InstanceFactory;
+import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -48,9 +50,13 @@ public class MagratheaStuffPlugin extends JavaPlugin {
         preventRestartTask = instanceFactory.createPreventRestartTask(logger, logHelper, systemHelper, dateTime);
         preventTaskTimer = instanceFactory.createTimer();
 
-        logger.info(pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!");
+        PreventDispenseListener preventDispenseListener = instanceFactory.createPreventDispenseListener(logger);
+        preventDispenseListener.setBlockedMaterialsToDispense(settingManager.getBlockedMaterialsToDispense());
+        getBukkitServer().getPluginManager().registerEvents(preventDispenseListener, this);
 
         systemHelper.startCpuLoadTask();
+
+        logger.info(pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!");
 
         initRestartPrevention();
     }
@@ -67,6 +73,10 @@ public class MagratheaStuffPlugin extends JavaPlugin {
 
     protected InstanceFactory getInstanceFactory() {
         return new InstanceFactory();
+    }
+
+    protected Server getBukkitServer() {
+        return getServer();
     }
 
     protected void initRestartPrevention() {

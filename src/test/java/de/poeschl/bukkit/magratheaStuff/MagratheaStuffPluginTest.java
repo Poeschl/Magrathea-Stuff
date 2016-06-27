@@ -2,12 +2,15 @@ package de.poeschl.bukkit.magratheaStuff;
 
 import de.poeschl.bukkit.magratheaStuff.helper.LogHelper;
 import de.poeschl.bukkit.magratheaStuff.helper.SystemHelper;
+import de.poeschl.bukkit.magratheaStuff.listener.PreventDispenseListener;
 import de.poeschl.bukkit.magratheaStuff.managers.SettingManager;
 import de.poeschl.bukkit.magratheaStuff.threads.PreventRestartTask;
 import de.poeschl.bukkit.magratheaStuff.threads.UpdateCpuLoadTask;
 import de.poeschl.bukkit.magratheaStuff.utils.InstanceFactory;
+import org.bukkit.Server;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -33,17 +36,23 @@ public class MagratheaStuffPluginTest {
         InstanceFactory mockedInstanceFactory = Mockito.mock(InstanceFactory.class);
         MagratheaStuffPlugin pluginToTest = Mockito.mock(MagratheaStuffPlugin.class);
         FileConfiguration mockedConfig = Mockito.mock(FileConfiguration.class);
+        SettingManager mockedSettings = Mockito.mock(SettingManager.class);
+        Logger mockedLogger = Mockito.mock(Logger.class);
+        Server mockedServer = Mockito.mock(Server.class);
         Set<String> dummyKeys = new HashSet<>();
         dummyKeys.add("dummy");
 
-        when(mockedInstanceFactory.createSettingsManager(any(FileConfiguration.class), any(Logger.class))).thenReturn(Mockito.mock(SettingManager.class));
-        when(mockedInstanceFactory.createLogHelper(any(Logger.class))).thenReturn(Mockito.mock(LogHelper.class));
+        when(mockedInstanceFactory.createSettingsManager(any(FileConfiguration.class), eq(mockedLogger))).thenReturn(mockedSettings);
+        when(mockedInstanceFactory.createLogHelper(mockedLogger)).thenReturn(Mockito.mock(LogHelper.class));
         when(mockedInstanceFactory.createSystemHelper(any(UpdateCpuLoadTask.class))).thenReturn(mockSystemHelper);
-        when(mockedInstanceFactory.getLogger(any(JavaPlugin.class))).thenReturn(Mockito.mock(Logger.class));
-        when(pluginToTest.getConfig()).thenReturn(mockedConfig);
+        when(mockedInstanceFactory.getLogger(any(JavaPlugin.class))).thenReturn(mockedLogger);
+        when(mockedInstanceFactory.createPreventDispenseListener(eq(mockedLogger))).thenReturn(Mockito.mock(PreventDispenseListener.class));
+        when(mockedServer.getPluginManager()).thenReturn(Mockito.mock(PluginManager.class));
         when(mockedConfig.getKeys(anyBoolean())).thenReturn(dummyKeys);
+        when(pluginToTest.getConfig()).thenReturn(mockedConfig);
         when(pluginToTest.getInstanceFactory()).thenReturn(mockedInstanceFactory);
         when(pluginToTest.getInfo()).thenReturn(new PluginDescriptionFile("", "", ""));
+        when(pluginToTest.getBukkitServer()).thenReturn(mockedServer);
 
         doCallRealMethod().when(pluginToTest).onEnable();
 
@@ -61,15 +70,21 @@ public class MagratheaStuffPluginTest {
         //WHEN
         SystemHelper mockSystemHelper = Mockito.mock(SystemHelper.class);
         InstanceFactory mockedInstanceFactory = Mockito.mock(InstanceFactory.class);
+        SettingManager mockedSettings = Mockito.mock(SettingManager.class);
+        Logger mockedLogger = Mockito.mock(Logger.class);
+        Server mockedServer = Mockito.mock(Server.class);
         MagratheaStuffPlugin pluginToTest = Mockito.mock(MagratheaStuffPlugin.class);
 
-        when(mockedInstanceFactory.createSettingsManager(any(FileConfiguration.class), any(Logger.class))).thenReturn(Mockito.mock(SettingManager.class));
-        when(mockedInstanceFactory.createLogHelper(any(Logger.class))).thenReturn(Mockito.mock(LogHelper.class));
+        when(mockedInstanceFactory.createSettingsManager(any(FileConfiguration.class), eq(mockedLogger))).thenReturn(mockedSettings);
+        when(mockedInstanceFactory.createLogHelper(mockedLogger)).thenReturn(Mockito.mock(LogHelper.class));
         when(mockedInstanceFactory.createSystemHelper(any(UpdateCpuLoadTask.class))).thenReturn(mockSystemHelper);
-        when(mockedInstanceFactory.getLogger(any(JavaPlugin.class))).thenReturn(Mockito.mock(Logger.class));
+        when(mockedInstanceFactory.getLogger(any(JavaPlugin.class))).thenReturn(mockedLogger);
+        when(mockedInstanceFactory.createPreventDispenseListener(eq(mockedLogger))).thenReturn(Mockito.mock(PreventDispenseListener.class));
+        when(mockedServer.getPluginManager()).thenReturn(Mockito.mock(PluginManager.class));
         when(pluginToTest.getConfig()).thenReturn(Mockito.mock(FileConfiguration.class));
         when(pluginToTest.getInstanceFactory()).thenReturn(mockedInstanceFactory);
         when(pluginToTest.getInfo()).thenReturn(new PluginDescriptionFile("", "", ""));
+        when(pluginToTest.getBukkitServer()).thenReturn(mockedServer);
 
         doCallRealMethod().when(pluginToTest).onEnable();
 
