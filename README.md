@@ -3,3 +3,7 @@ A plugin which does a bunch of things usefull on the Magrathea-Server.
 
 Features:
 * Prevent restart on high server load.
+
+---
+
+[![GitHub license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/Poeschl/Magrathea-Stuff/master/LICENSE)
