@@ -1,8 +1,12 @@
 package de.poeschl.bukkit.magratheaStuff.managers;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static de.poeschl.bukkit.magratheaStuff.PojoUtilities.$SettingsManager;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,6 +51,24 @@ public class SettingManagerTest {
         boolean result = settingManagerToTest.getHighLoadRestartPreventionEnabled();
 
         assertThat(result).isFalse();
+    }
+
+    @Test
+    public void getBlockedMaterialsToDispense() {
+        FileConfiguration config = Mockito.mock(FileConfiguration.class);
+        SettingManager settingManagerToTest = $SettingsManager().withConfig(config).build();
+        List<String> dummyMatList = new ArrayList<>();
+        dummyMatList.add("LAVA_BUCKET");
+        when(config.getStringList(SettingManager.BLOCKED_DISPENSE_MATERIAL)).thenReturn(dummyMatList);
+
+        List<Material> result = settingManagerToTest.getBlockedMaterialsToDispense();
+
+        assertThat(result).contains(Material.LAVA_BUCKET);
+
+        List<Material> repeatedResult = settingManagerToTest.getBlockedMaterialsToDispense();
+
+        assertThat(repeatedResult).isEqualTo(result);
+
     }
 
 }

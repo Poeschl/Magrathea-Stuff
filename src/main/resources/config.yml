@@ -1,1 +1,3 @@
 preventServerFromHighLoadRestart: true
+blockedDispenseMaterials:
+  - LAVA_BUCKET

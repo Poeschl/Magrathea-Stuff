@@ -2,6 +2,7 @@ package de.poeschl.bukkit.magratheaStuff.utils;
 
 import de.poeschl.bukkit.magratheaStuff.helper.LogHelper;
 import de.poeschl.bukkit.magratheaStuff.helper.SystemHelper;
+import de.poeschl.bukkit.magratheaStuff.listener.PreventDispenseListener;
 import de.poeschl.bukkit.magratheaStuff.managers.SettingManager;
 import de.poeschl.bukkit.magratheaStuff.models.DateTime;
 import de.poeschl.bukkit.magratheaStuff.threads.PreventRestartTask;
@@ -54,5 +55,9 @@ public class InstanceFactory {
 
     public PreventRestartTask createPreventRestartTask(Logger logger, LogHelper logHelper, SystemHelper systemHelper, DateTime dateTime) {
         return new PreventRestartTask(logger, logHelper, systemHelper, dateTime);
+    }
+
+    public PreventDispenseListener createPreventDispenseListener(Logger logger) {
+        return new PreventDispenseListener(logger);
     }
 }

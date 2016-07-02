@@ -2,16 +2,19 @@ package de.poeschl.bukkit.magratheaStuff;
 
 import de.poeschl.bukkit.magratheaStuff.helper.LogHelperBuilder;
 import de.poeschl.bukkit.magratheaStuff.helper.SystemHelperBuilder;
+import de.poeschl.bukkit.magratheaStuff.listener.PreventDispenseListenerBuilder;
 import de.poeschl.bukkit.magratheaStuff.managers.SettingManagerBuilder;
 import de.poeschl.bukkit.magratheaStuff.models.DateTime;
 import de.poeschl.bukkit.magratheaStuff.threads.PreventRestartTaskBuilder;
 import de.poeschl.bukkit.magratheaStuff.threads.UpdateCpuLoadTask;
 import de.poeschl.bukkit.magratheaStuff.threads.UpdateCpuLoadTaskBuilder;
 import de.poeschl.bukkit.magratheaStuff.utils.InstanceFactory;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.mockito.Mockito;
 
 import javax.management.MBeanServer;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /**
@@ -49,5 +52,11 @@ public class PojoUtilities {
         return new UpdateCpuLoadTaskBuilder()
                 .withMBeanServer(Mockito.mock(MBeanServer.class))
                 .withRuntime(Mockito.mock(Runtime.class));
+    }
+
+    public static PreventDispenseListenerBuilder $PreventDispenseListener() {
+        return new PreventDispenseListenerBuilder()
+                .withLogger(Mockito.mock(Logger.class))
+                .withBlockedMaterialsToDispense(new ArrayList<Material>());
     }
 }
