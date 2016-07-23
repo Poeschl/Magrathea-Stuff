@@ -12,6 +12,7 @@ import de.poeschl.bukkit.magratheaStuff.utils.InstanceFactory;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
 
 import javax.management.MBeanServer;
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public class PojoUtilities {
 
     public static PreventDispenseListenerBuilder $PreventDispenseListener() {
         return new PreventDispenseListenerBuilder()
-                .withLogger(Mockito.mock(Logger.class))
+                .withLogger(PowerMockito.mock(Logger.class))
                 .withBlockedMaterialsToDispense(new ArrayList<Material>());
     }
 }
