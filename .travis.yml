@@ -6,7 +6,10 @@ jdk:
 
 cache:
   directories:
-    - $HOME/.gradle/
+  - $HOME/.gradle/
+
+before_install:
+  - chmod +x gradlew
 
 script:
-    - ./gradlew check jacocoTestReport coveralls
+  - ./gradlew check jacocoTestReport coveralls
