@@ -17,7 +17,8 @@ import static org.mockito.Mockito.verify;
 
 public class LogHelperTest {
 
-    public static final URL TEST_LOG_URL = Thread.currentThread().getContextClassLoader().getResource("tailtest.log");
+    private static final URL TEST_LOG_URL = Thread.currentThread().getContextClassLoader().getResource("tailtest.log");
+    private static final URL TEST_LOG_URL_MAC = Thread.currentThread().getContextClassLoader().getResource("tailtest-mac.log");
 
     @Test
     public void getTimeOfLastServerLogEntry() throws ParseException {
@@ -59,6 +60,12 @@ public class LogHelperTest {
         LogHelper logHelperToTest = $LogHelper().build();
 
         String oneLine = logHelperToTest.tail(testLog, 1);
+
+        assertThat(oneLine.trim()).isEqualTo("[20:28:29] [Server thread/INFO] [FML/]: Unloading dimension 11");
+
+        File macTestLog = new File(TEST_LOG_URL_MAC.getPath());
+
+        oneLine = logHelperToTest.tail(macTestLog, 1);
 
         assertThat(oneLine.trim()).isEqualTo("[20:28:29] [Server thread/INFO] [FML/]: Unloading dimension 11");
     }
